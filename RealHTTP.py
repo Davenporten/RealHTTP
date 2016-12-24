@@ -28,14 +28,27 @@ class RealHTTP:
         return self.FAIL
 
     def execute(self, data):
+        '''Main functionality of the parser, checks if there is a complete http message; parses through the message if it's complete and returns from the function making all the data as the remainder content.'''
         data = self.content + data
         self.content = ''
+
+        # Attempts to split the data based on the terminating characters of an http message.
+        # If there are more than 1 elements in the list there is a complete message.
         message = data.split('\r\n\r\n',1)
         if len(message) == 1:
             self.content = self.content + data
             return self.PARTIAL
-        self.content = message[1]
- 
+
+        # Goes through whatever wasn't a part of the first http request and puts it into the remainder content inserting '\r\n\r\n' where appropriate in case of multiple complete http requests
+        int i = 1
+        while i < len(message):
+            self.content = self.content + message[i]
+            if not (i == (len(message) - 1)):
+                self.content = self.content + '\r\n\r\n'
+            i = i + 1
+
+        # Splits the http request into separate lines.
+        # Each line is then split 
         lines = message[0].split('\r\n')
         for l in lines:
             if l == '':
