@@ -40,7 +40,7 @@ class RealHTTP:
         for l in lines:
             if l == '':
                 continue
-            broke = l.split(': ')
+            broke = l.split(':',1)
             if len(broke) == 2:
                 self.headers[broke[0]] = broke[1]
             elif len(broke) == 1:
