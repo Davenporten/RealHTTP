@@ -3,20 +3,22 @@
 
 class RealHTTP:
     def __init__(self):
+        # Return values for how the parsing went
         self.PARTIAL = 1
         self.FULL = 2
         self.FAIL = 4
-        self.content = ''
+        # ~~~~~~~~~~~~~~
+        self.content = ''        # The remainder data after the data is parsed
         self.request_type = None # This will be a string
         self.url = None
         self.version = None
-        self.headers = {}
-        self.body = None
-        self.needed_body = 0
-        self.error = None
-        self.status = 'No status'
-        self.ERR1 = 1 # Signifies that there was no request method
+        self.headers = {}       # A dict of all the headers; key: header, value: whatever the header's value is
+        self.body = None        # Entity body of the request; if there is one
+        self.needed_body = 0    # The number of bytes still needed for the entity body
+        self.error = None       # If there parsing fails for any reason a string is put in to explain why
+        self.status = 'No status' # Not sure if there is needed
 
+    '''Not sure if these will be particularly useful, but they can be called if someone wants.'''
     def PARTIAL(self):
         return self.PARTIAL
 
@@ -24,8 +26,8 @@ class RealHTTP:
         return self.FULL
 
     def FAIL(self):
-        '''This will be used mostly for when someone calls getMessage() when there is not a full message.'''
         return self.FAIL
+    # ~~~~~~~~~~~~~~~~~~~~
 
     def execute(self, data):
         '''Main functionality of the parser, checks if there is a complete http message; parses through the message if it's complete and returns from the function making all the data as the remainder content.'''
@@ -48,7 +50,7 @@ class RealHTTP:
             i = i + 1
 
         # Splits the http request into separate lines.
-        # Each line is then split 
+        # Each line is then split by the first ':'; if there are two elements it is added to the headers, if there is one it is the first line of the request, and if there is anything else the message is bad 
         lines = message[0].split('\r\n')
         for l in lines:
             if l == '':
@@ -56,6 +58,11 @@ class RealHTTP:
             broke = l.split(':',1)
             if len(broke) == 2:
                 self.headers[broke[0]] = broke[1]
+                # I feel like there must be a better way of doing thing
+                head = broke[0].lower()
+                if head == 'content-length':
+                    self.needed_body = broke[1]
+                # ~~~~~~~~~~~~~
             elif len(broke) == 1:
                 first = broke[0].split()
                 if len(first) == 3:
@@ -71,17 +78,17 @@ class RealHTTP:
                         else:
                             self.request_type = f  
             else:
+                self.error = 'Request was ill formatted.'
                 return self.FAIL
         return self.FULL
- 
-    #def execute_entity(self, data):
-    
-    def full_message(self):
-        '''Returns true if there is a full message and false if not; type will be None if there is not a full message.'''
-        if self.request_type:
-            return True
-        return False
 
+    def execute_body(self, data):
+        '''Parses the data to construct the entity body based on the content-length, returning FULL, PARTIAL, or FAIL.'''
+        data = self.content + data
+        while self.needed_body:
+            
+        return self.FULL
+ 
     def get_request_type(self):
         '''Returns the request type (GET, POST, etc) or None if there is not a full message.'''
         return self.request_type
