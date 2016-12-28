@@ -31,6 +31,9 @@ class RealHTTP:
     def execute(self, data):
         '''Main functionality of the parser, checks if there is a complete http message; parses through the message if it's complete and returns from the function making all the data as the remainder content.'''
         data = self.content + data
+        if not data:
+            self.error = 'There was no data in the parser\'s remainder and no data was passed in.'
+            return self.FAIL
         self.content = ''
 
         # Attempts to split the data based on the terminating characters of an http message.
@@ -74,10 +77,13 @@ class RealHTTP:
                             self.url = f
                         elif f[:4] == 'HTTP':
                             self.version = f
+                        elif '/' in f:
+                            self.error = 'Request was ill formatted.'
+                            return self.FAIL
                         else:
                             self.request_type = f  
             else:
-                self.error = 'Request was ill formatted.'
+                self.error = 'Unrecognized error, the request my be empty'
                 return self.FAIL
         return self.FULL
 
@@ -142,17 +148,23 @@ def test_print(mess):
     print 'Url: ' + str(f.get_url())
     print 'Version: ' + str(f.get_version())
     print 'Remainder: ' + str(f.get_remainder())
+    print 'Error: ' + str(f.get_error())
     print 'Calling execute_body()'
     f.execute_body(f.get_remainder())
-    if len(f.body):
-        print 'Entity body: ' + str(f.get_body())
-    else:
-        print 'No entity body'
+    print 'Entity body: ' + str(f.get_body())
     print '\n'
 
 if __name__ == '__main__':
     full = 'GET /index.html HTTP/1.1\r\nfirst:this is the first\r\nsecond: this is the second\r\nthird:this is the third\r\nContent-Length:5\r\n\r\nfiver'
+    part = 'PUT / HTTP/1.1 first:this is the first\r\n'
+    fail = 'HEAD/HTTP/1.1\r\nfirst:this is the first\r\nsecond: this is the second\r\n\r\n'
+    empty = ''
+    t1 = 'GET / HTTP/1.1\r\nfirst: here is a '
+    print '\n'
     test_print(full)
+    test_print(part)
+    test_print(fail)
+    test_print(empty)
 
 
 # End of REALHTTP.py
