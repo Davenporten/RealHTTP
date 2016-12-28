@@ -16,6 +16,19 @@ class RealHTTP:
         self.body = ''          # Entity body of the request; if there is one
         self.needed_body = 0    # The number of bytes still needed for the entity body
         self.error = None       # If there parsing fails for any reason a string is put in to explain why
+        self.start = 1 # This is an important line, it's used to for proper formatting of the headers and avoiding overriding correct data; if it has already done the first like of the request and tried to do it again it will skip that header.
+
+    def clear(self):
+        '''Resets all data members to what they would be at time of initialization.'''
+        self.content = ''
+        self.request_type = None
+        self.url = None
+        self.version = None
+        self.headers.clear()
+        self.body = ''
+        self.needed_body = 0
+        self.error = None
+        self.start = 1
 
     '''Not sure if these will be particularly useful, but they can be called if someone wants.'''
     def PARTIAL(self):
@@ -52,7 +65,7 @@ class RealHTTP:
             i = i + 1
 
         # Splits the http request into separate lines.
-        # Each line is then split by the first ':'; if there are two elements it is added to the headers, if there is one it is the first line of the request, and if there is anything else the message is bad 
+        # Each line is then split by the first ':'; if there are two elements it is added to the headers, if there is one it is the first line of the request, and if there is anything else the message is bad
         lines = message[0].split('\r\n')
         for l in lines:
             if l == '':
@@ -67,11 +80,13 @@ class RealHTTP:
                 # ~~~~~~~~~~~~~
             elif len(broke) == 1:
                 first = broke[0].split()
-                if len(first) == 3:
+                if len(first) == 3 and self.start:
                     self.request_type = first[0]
                     self.url = first[1]
                     self.version = first[2]
-                else:
+                    self.start = 0 # First line is being done, it should never get back in here
+                elif self.start:
+                    self.start = 0 # First line is being done, it should never get back in here
                     for f in first:
                         if f[:1] == '/':
                             self.url = f
@@ -83,7 +98,7 @@ class RealHTTP:
                         else:
                             self.request_type = f  
             else:
-                self.error = 'Unrecognized error, the request my be empty'
+                self.error = 'Unrecognized error, the request my be empty.'
                 return self.FAIL
         return self.FULL
 
@@ -129,42 +144,28 @@ class RealHTTP:
         '''Returns the error message if FAIL is ever returned.'''
         return self.error
 
+    def test(self,request):
+        '''A simple function for testing, not really useful in actually using the parser, but is more for developing the parser. Takes in a request message, calls execute, prints out relevant data members, tries to parse the entity body and prints out the body if there is one.'''
+
+        result = self.execute(request)
+        if result == self.FULL:
+            print 'FULL'
+        if result == self.PARTIAL:
+            print 'PARTIAL'
+        if result == self.FAIL:
+            print 'FAIL'
+
+        print 'Headers: ' + str(self.get_headers())
+        print 'Type: ' + str(self.get_request_type())
+        print 'Url: ' + str(self.get_url())
+        print 'Version: ' + str(self.get_version())
+        print 'Remainder: ' + str(self.get_remainder())
+        print 'Error: ' + str(self.get_error())
+        print 'Calling execute_body()'
+        f.execute_body(self.get_remainder())
+        print 'Entity body: ' + str(self.get_body())
+        print '\n'
+
 version = '0.1'
-
-def test_print(mess):
-
-    f = RealHTTP()
-
-    result = f.execute(mess)
-    if result == f.FULL:
-        print 'FULL'
-    if result == f.PARTIAL:
-        print 'PARTIAL'
-    if result == f.FAIL:
-        print 'FAIL'
-
-    print 'Headers: ' + str(f.get_headers())
-    print 'Type: ' + str(f.get_request_type())
-    print 'Url: ' + str(f.get_url())
-    print 'Version: ' + str(f.get_version())
-    print 'Remainder: ' + str(f.get_remainder())
-    print 'Error: ' + str(f.get_error())
-    print 'Calling execute_body()'
-    f.execute_body(f.get_remainder())
-    print 'Entity body: ' + str(f.get_body())
-    print '\n'
-
-if __name__ == '__main__':
-    full = 'GET /index.html HTTP/1.1\r\nfirst:this is the first\r\nsecond: this is the second\r\nthird:this is the third\r\nContent-Length:5\r\n\r\nfiver'
-    part = 'PUT / HTTP/1.1 first:this is the first\r\n'
-    fail = 'HEAD/HTTP/1.1\r\nfirst:this is the first\r\nsecond: this is the second\r\n\r\n'
-    empty = ''
-    t1 = 'GET / HTTP/1.1\r\nfirst: here is a '
-    print '\n'
-    test_print(full)
-    test_print(part)
-    test_print(fail)
-    test_print(empty)
-
 
 # End of REALHTTP.py
