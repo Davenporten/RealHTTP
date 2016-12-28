@@ -9,14 +9,13 @@ class RealHTTP:
         self.FAIL = 4
         # ~~~~~~~~~~~~~~
         self.content = ''        # The remainder data after the data is parsed
-        self.request_type = None # This will be a string
+        self.request_type = None
         self.url = None
         self.version = None
         self.headers = {}       # A dict of all the headers; key: header, value: whatever the header's value is
-        self.body = None        # Entity body of the request; if there is one
+        self.body = ''          # Entity body of the request; if there is one
         self.needed_body = 0    # The number of bytes still needed for the entity body
         self.error = None       # If there parsing fails for any reason a string is put in to explain why
-        self.status = 'No status' # Not sure if there is needed
 
     '''Not sure if these will be particularly useful, but they can be called if someone wants.'''
     def PARTIAL(self):
@@ -61,7 +60,7 @@ class RealHTTP:
                 # I feel like there must be a better way of doing thing
                 head = broke[0].lower()
                 if head == 'content-length':
-                    self.needed_body = broke[1]
+                    self.needed_body = int(broke[1])
                 # ~~~~~~~~~~~~~
             elif len(broke) == 1:
                 first = broke[0].split()
@@ -124,13 +123,36 @@ class RealHTTP:
         '''Returns the error message if FAIL is ever returned.'''
         return self.error
 
-    def get_status(self):
-        '''Returns a message indicating what happened that last time execute was called and the start of the request.'''
-        return self.status
-
 version = '0.1'
 
+def test_print(mess):
+
+    f = RealHTTP()
+
+    result = f.execute(mess)
+    if result == f.FULL:
+        print 'FULL'
+    if result == f.PARTIAL:
+        print 'PARTIAL'
+    if result == f.FAIL:
+        print 'FAIL'
+
+    print 'Headers: ' + str(f.get_headers())
+    print 'Type: ' + str(f.get_request_type())
+    print 'Url: ' + str(f.get_url())
+    print 'Version: ' + str(f.get_version())
+    print 'Remainder: ' + str(f.get_remainder())
+    print 'Calling execute_body()'
+    f.execute_body(f.get_remainder())
+    if len(f.body):
+        print 'Entity body: ' + str(f.get_body())
+    else:
+        print 'No entity body'
+    print '\n'
+
 if __name__ == '__main__':
-    parser = RealHTTP()
+    full = 'GET /index.html HTTP/1.1\r\nfirst:this is the first\r\nsecond: this is the second\r\nthird:this is the third\r\nContent-Length:5\r\n\r\nfiver'
+    test_print(full)
+
 
 # End of REALHTTP.py
