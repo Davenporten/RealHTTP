@@ -42,7 +42,7 @@ class RealHTTP:
             return self.PARTIAL
 
         # Goes through whatever wasn't a part of the first http request and puts it into the remainder content inserting '\r\n\r\n' where appropriate in case of multiple complete http requests
-        int i = 1
+        i = 1
         while i < len(message):
             self.content = self.content + message[i]
             if not (i == (len(message) - 1)):
@@ -85,8 +85,15 @@ class RealHTTP:
     def execute_body(self, data):
         '''Parses the data to construct the entity body based on the content-length, returning FULL, PARTIAL, or FAIL.'''
         data = self.content + data
-        while self.needed_body:
-            
+        if self.needed_body > len(data):
+            self.body = self.body + data
+            self.needed_body = self.needed_body - len(data)
+            if self.needed_body:
+                return self.PARTIAL
+            else:
+                return self.FULL
+        self.body = self.body + data[:self.needed_body]
+        self.needed_body = 0
         return self.FULL
  
     def get_request_type(self):
@@ -122,5 +129,8 @@ class RealHTTP:
         return self.status
 
 version = '0.1'
+
+if __name__ == '__main__':
+    parser = RealHTTP()
 
 # End of REALHTTP.py
