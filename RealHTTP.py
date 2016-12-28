@@ -168,4 +168,4 @@ class RealHTTP:
 
 version = '0.1'
 
-# End of REALHTTP.py
+# End of RealHTTP.py
