@@ -71,35 +71,32 @@ class RealHTTP:
             if l == '':
                 continue
             broke = l.split(':',1)
-            if len(broke) == 2:
+            if self.start:
+                first = l.split()
+                self.start = 0 # First line is being done, it should never get back in here
+                size = len(first)
+                # There is probably a better way of doing this, a more dynamic way that allows for a wider variety of formats
+                if size > 3:
+                    self.error = 'Too many elements in first line of request.'
+                    return self.FAIL
+                if size < 2:
+                    self.error = 'Too few elements in first line, request needs a method and URL.'
+                    return self.FAIL
+                self.request_type = first[0]
+                self.url = first[1]
+                if size == 3:
+                    self.version = first[2]
+            elif len(broke) == 2:
                 self.headers[broke[0]] = broke[1]
                 # I feel like there must be a better way of doing thing
                 head = broke[0].lower()
                 if head == 'content-length':
                     self.needed_body = int(broke[1])
                 # ~~~~~~~~~~~~~
-            elif len(broke) == 1:
-                first = broke[0].split()
-                if len(first) == 3 and self.start:
-                    self.request_type = first[0]
-                    self.url = first[1]
-                    self.version = first[2]
-                    self.start = 0 # First line is being done, it should never get back in here
-                elif self.start:
-                    self.start = 0 # First line is being done, it should never get back in here
-                    for f in first:
-                        if f[:1] == '/':
-                            self.url = f
-                        elif f[:4] == 'HTTP':
-                            self.version = f
-                        elif '/' in f:
-                            self.error = 'Request was ill formatted.'
-                            return self.FAIL
-                        else:
-                            self.request_type = f  
             else:
                 self.error = 'Unrecognized error, the request my be empty.'
                 return self.FAIL
+        self.start = 1
         return self.FULL
 
     def execute_body(self, data):
@@ -167,5 +164,10 @@ class RealHTTP:
         print '\n'
 
 version = '0.1'
+
+if __name__ == '__main__':
+    full = 'GET http://google.com\r\nfirst: this is first\r\nsecond:this is second\r\n\r\n'
+    f = RealHTTP()
+    f.test(full)
 
 # End of RealHTTP.py
