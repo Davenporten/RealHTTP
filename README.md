@@ -27,7 +27,12 @@ While there are other parsers, I created RealHTTP because I've been really dissa
 
 ### Functions:
 
-**clear()**
+**execute(data)**
+
+**clear()**: Resets all data members of the parser to their state at time of creation. Any data still stored in the parser will be deleted, any states will be reset.
+
+
+**PARTIAL(); FULL(); FAIL()**: These functions don't have too much of a purpose in python except to help the user realize the associated values are there for them.
 
 
 ### Notes For Development:
