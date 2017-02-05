@@ -77,5 +77,5 @@ A simple function for testing, not really useful in actually using the parser, b
 
 
 
-### Notes For Development:  
+### Notes For Development (Under Construction):  
 **get_remainder():** It is a good idea to use get_remainder() after execute() or execute_body() return FULL and cache the data. While in the middle of parsing (ie, before FULL is returned) the two functions just mentioned will concatenate the data you pass in with what data is already stored. However, if you go out of scope, say after you have parsed a single message, any data stored in the parser will be lost. A developer can choose to use the RealHTTP parser as a cache, but the details of making that work is up to them.
