@@ -10,8 +10,9 @@ This function is where the actual parsing takes place. Once data is passed in th
 **IMPORTANT:** The parser will only go through one message at a time, even if there are multiple complete messages in "data"; FULL will be returned when the first message has been parsed. The user must be sure to use get_remainder() as to not lose any information.
 
 **execute_body(data)**  
-**data**: the string representing the remaining body of the HTTP message.
-
+**data**: the string representing the remaining body of the HTTP message.  
+There are two ways of telling if this function needs to be run: 1) call get_needed_body() which tells how many bytes the entity body still needs to be complete, or 2) access the headers with get_headers() and look at the "content-length" entry. 
+**IMPORTANT:** This function will only be successful if called after execute()
 
 **clear()**  
 Resets all data members of the parser to their state at time of creation. Any data still stored in the parser will be deleted, any states will be reset.
