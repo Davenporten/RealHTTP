@@ -1,6 +1,6 @@
 # RealHTTP - An HTTP parser
 
-While there are other parsers, I created RealHTTP because I've been really dissatisfied with what's out there, particularly with poorly named functions and lack of documentation. With RealHTTP I'm hoping it's a parser that is intuitive and to have easy to read documentation (found below). There are more details in the code itself in the form of comments while the documentation here is just for use and what to expect from the parser. RealHTTP is an on going project so any bug reports, suggestions, contributions, etc are welcome.
+While there are other parsers, I created RealHTTP because I've been really dissatisfied with what's out there, particularly with poorly named functions and lack of documentation. With RealHTTP I'm hoping it's a parser that is intuitive to use and one with easy to read documentation (found below). There are some comments in the code to help explain the use and implementation of the parser, but the documentation here is just for use and what to expect from the parser. RealHTTP is an on going project so any bug reports, suggestions, contributions, etc are welcome.
 
 ### Data Members:
 
@@ -26,6 +26,8 @@ While there are other parsers, I created RealHTTP because I've been really dissa
 
 
 ### Functions:
+
+**clear()**
 
 
 ### Notes For Development:
