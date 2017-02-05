@@ -16,7 +16,7 @@ class RealHTTP:
         self.body = ''          # Entity body of the request; if there is one
         self.needed_body = 0    # The number of bytes still needed for the entity body
         self.error = None       # If there parsing fails for any reason a string is put in to explain why
-        self.start = 1 # This is an important line, it's used to for proper formatting of the headers and avoiding overriding correct data; if it has already done the first like of the request and tried to do it again it will skip that header.
+        self.start = 1 # This is an important value, it's used for proper formatting of the headers and avoiding overriding correct data; if it has already done the first line of the request and tried to do it again it will skip that header.
 
     def clear(self):
         '''Resets all data members to what they would be at time of initialization.'''
@@ -94,7 +94,7 @@ class RealHTTP:
                     self.needed_body = int(broke[1])
                 # ~~~~~~~~~~~~~
             else:
-                self.error = 'Unrecognized error, the request my be empty.'
+                self.error = 'Unrecognized error, the request may be empty.'
                 return self.FAIL
         self.start = 1
         return self.FULL
@@ -140,6 +140,9 @@ class RealHTTP:
     def get_error(self):
         '''Returns the error message if FAIL is ever returned.'''
         return self.error
+
+    def get_needed_body(self):
+        '''Returns the value of needed_body, or the number of bytes needed to be added to the entity body.'''
 
     def test(self,request):
         '''A simple function for testing, not really useful in actually using the parser, but is more for developing the parser. Takes in a request message, calls execute, prints out relevant data members, tries to parse the entity body and prints out the body if there is one.'''
