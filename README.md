@@ -4,14 +4,21 @@ While there are other parsers, I created RealHTTP because I've been really dissa
 
 ### Functions:
 
-**execute(data)**:
+**execute(data)**    
+**data**: the string representing the HTTP message.  
+This function is where the actual parsing takes place. Once data is passed in the parser will check to see if a complete HTTP message is contained in the string. If there is a complete message it will be split into the method, resource or path, HTTP version, then the headers, and finally return FULL (note that the body of the message is NOT parsed). If the message does not contain a complete message no parsing will take place and all the data will be stored in "content" which can be accessed by the get_remainder() function. If for whatever reason the parsing fails, FAIL will be returned and an error message will be assigned to "error," which can be accessed with get_error().
+**IMPORTANT:** The parser will only go through one message at a time, even if there are multiple complete messages in "data"; FULL will be returned when the first message has been parsed. The user must be sure to use get_remainder() as to not lose any information.
 
-Params: data ->
+**execute_body(data)**  
+**data**: the string representing the remaining body of the HTTP message.
 
-**clear()**: Resets all data members of the parser to their state at time of creation. Any data still stored in the parser will be deleted, any states will be reset.
+
+**clear()**  
+Resets all data members of the parser to their state at time of creation. Any data still stored in the parser will be deleted, any states will be reset.
 
 
-**PARTIAL(); FULL(); FAIL()**: These functions don't have too much of a purpose in python except to help the user realize the associated values are there for them.
+**PARTIAL(); FULL(); FAIL()**  
+These functions don't have too much of a purpose in python except to help the user realize the associated values are there for them.
 
 
 ### Data Members:
