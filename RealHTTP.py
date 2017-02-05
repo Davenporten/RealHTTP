@@ -143,6 +143,7 @@ class RealHTTP:
 
     def get_needed_body(self):
         '''Returns the value of needed_body, or the number of bytes needed to be added to the entity body.'''
+        return self.needed_body
 
     def test(self,request):
         '''A simple function for testing, not really useful in actually using the parser, but is more for developing the parser. Takes in a request message, calls execute, prints out relevant data members, tries to parse the entity body and prints out the body if there is one.'''
