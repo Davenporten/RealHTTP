@@ -9,7 +9,7 @@ class RealHTTP:
         self.FAIL = 4
         # ~~~~~~~~~~~~~~
         self.content = ''        # The remainder data after the data is parsed
-        self.request_type = None
+        self.method_type = None
         self.url = None
         self.version = None
         self.headers = {}       # A dict of all the headers; key: header, value: whatever the header's value is
@@ -21,7 +21,7 @@ class RealHTTP:
     def clear(self):
         '''Resets all data members to what they would be at time of initialization.'''
         self.content = ''
-        self.request_type = None
+        self.method_type = None
         self.url = None
         self.version = None
         self.headers.clear()
@@ -82,7 +82,7 @@ class RealHTTP:
                 if size < 2:
                     self.error = 'Too few elements in first line, request needs a method and URL.'
                     return self.FAIL
-                self.request_type = first[0]
+                self.method_type = first[0]
                 self.url = first[1]
                 if size == 3:
                     self.version = first[2]
@@ -113,9 +113,9 @@ class RealHTTP:
         self.needed_body = 0
         return self.FULL
  
-    def get_request_type(self):
-        '''Returns the request type (GET, POST, etc) or None if there is not a full message.'''
-        return self.request_type
+    def get_method_type(self):
+        '''Returns the method type (GET, POST, etc) or None if there is not a full message.'''
+        return self.method_type
 
     def get_url(self):
         '''Returns the urls of the request or None if there is not a full message.'''
@@ -157,7 +157,7 @@ class RealHTTP:
             print 'FAIL'
 
         print 'Headers: ' + str(self.get_headers())
-        print 'Type: ' + str(self.get_request_type())
+        print 'Type: ' + str(self.get_method_type())
         print 'Url: ' + str(self.get_url())
         print 'Version: ' + str(self.get_version())
         print 'Remainder: ' + str(self.get_remainder())
