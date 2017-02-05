@@ -5,6 +5,7 @@ While there are other parsers, I created RealHTTP because I've been really dissa
 ### Functions:
 
 **execute(data)**:
+
 Params: data ->
 
 **clear()**: Resets all data members of the parser to their state at time of creation. Any data still stored in the parser will be deleted, any states will be reset.
