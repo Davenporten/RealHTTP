@@ -47,7 +47,7 @@ Resets all data members of the parser to their state at time of creation. Any da
 **PARTIAL(); FULL(); FAIL()**  
 These functions don't have too much of a purpose in python except to help the user realize the associated values are there for them.  
 
-**test(request)**
+**test(request)**  
 **request:** A string representing a HTTP message.  
 A simple function for testing, not really useful in actually using the parser, but more for developing the parser. Takes in a request message, calls execute, prints out relevant data members, tries to parse the entity body and prints out the body if there is one.  
 
